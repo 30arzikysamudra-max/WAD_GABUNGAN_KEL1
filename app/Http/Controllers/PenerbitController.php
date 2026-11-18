@@ -12,11 +12,40 @@ class PenerbitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $penerbit = Penerbit::orderBy('id')->get();
+        $search = trim((string) $request->query('q', ''));
+        $wilayah = (string) $request->query('wilayah', '');
 
-        return view('penerbit.index', compact('penerbit'));
+        $penerbit = Penerbit::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->where('nama_penerbit', 'like', "%{$search}%")
+                        ->orWhere('nama_sales', 'like', "%{$search}%")
+                        ->orWhere('alamat', 'like', "%{$search}%");
+                });
+            })
+            ->when(in_array($wilayah, ['Nasional', 'Internasional'], true), function ($query) use ($wilayah) {
+                $query->where('wilayah_asal', $wilayah);
+            })
+            ->orderBy('id')
+            ->get();
+
+        $statistik = [
+            'total' => Penerbit::count(),
+            'nasional' => Penerbit::where('wilayah_asal', 'Nasional')->count(),
+            'internasional' => Penerbit::where('wilayah_asal', 'Internasional')->count(),
+        ];
+
+        return view('penerbit.index', compact('penerbit', 'statistik', 'search', 'wilayah'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Penerbit $penerbit): View
+    {
+        return view('penerbit.show', compact('penerbit'));
     }
 
     /**
@@ -70,11 +99,6 @@ class PenerbitController extends Controller
             ->with('success', 'Data penerbit berhasil dihapus.');
     }
 
-    /**
-     * Aturan validasi untuk store dan update.
-     *
-     * @return array<string, mixed>
-     */
     private function validasi(Request $request): array
     {
         return $request->validate([

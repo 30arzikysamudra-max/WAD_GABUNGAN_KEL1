@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Penerbit;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,7 +13,9 @@ class PenerbitTest extends TestCase
 
     public function test_can_render_penerbit_index(): void
     {
-        $response = $this->get('/penerbit');
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->get('/penerbit');
 
         $response->assertStatus(200);
         $response->assertSee('Daftar Penerbit dan Supplier');
@@ -21,7 +24,9 @@ class PenerbitTest extends TestCase
 
     public function test_can_render_create_form(): void
     {
-        $response = $this->get('/penerbit/create');
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->get('/penerbit/create');
 
         $response->assertStatus(200);
         $response->assertSee('Form Tambah Penerbit');
@@ -30,7 +35,9 @@ class PenerbitTest extends TestCase
 
     public function test_validation_fails_with_invalid_input(): void
     {
-        $response = $this->post('/penerbit', [
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post('/penerbit', [
             'nama_penerbit' => '',
             'nama_sales' => '',
             'kontak_sales' => 'bukan-nomor',
@@ -49,6 +56,8 @@ class PenerbitTest extends TestCase
 
     public function test_can_store_update_and_delete_penerbit(): void
     {
+        $admin = User::factory()->admin()->create();
+
         // 1. Store
         $postData = [
             'nama_penerbit' => 'Penerbit Test Otomatis',
@@ -58,7 +67,7 @@ class PenerbitTest extends TestCase
             'wilayah_asal' => 'Nasional',
         ];
 
-        $storeResponse = $this->post('/penerbit', $postData);
+        $storeResponse = $this->actingAs($admin)->post('/penerbit', $postData);
         $storeResponse->assertRedirect('/penerbit');
         $storeResponse->assertSessionHas('success');
 
@@ -69,13 +78,13 @@ class PenerbitTest extends TestCase
         $created = Penerbit::where('nama_penerbit', 'Penerbit Test Otomatis')->firstOrFail();
 
         // 2. Edit
-        $editResponse = $this->get("/penerbit/{$created->id}/edit");
+        $editResponse = $this->actingAs($admin)->get("/penerbit/{$created->id}/edit");
         $editResponse->assertStatus(200);
         $editResponse->assertSee('Edit Data Penerbit');
         $editResponse->assertSee('Penerbit Test Otomatis');
 
         // 3. Update
-        $updateResponse = $this->put("/penerbit/{$created->id}", [
+        $updateResponse = $this->actingAs($admin)->put("/penerbit/{$created->id}", [
             'nama_penerbit' => 'Penerbit Test Otomatis (Updated)',
             'nama_sales' => 'Sales Tester Baru',
             'kontak_sales' => '08997654321',
@@ -92,7 +101,7 @@ class PenerbitTest extends TestCase
         ]);
 
         // 4. Delete
-        $deleteResponse = $this->delete("/penerbit/{$created->id}");
+        $deleteResponse = $this->actingAs($admin)->delete("/penerbit/{$created->id}");
         $deleteResponse->assertRedirect('/penerbit');
         $deleteResponse->assertSessionHas('success');
 

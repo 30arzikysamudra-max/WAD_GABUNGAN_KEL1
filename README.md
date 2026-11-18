@@ -1,58 +1,39 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Manajemen Perpustakaan Digital (Studi Kasus 01)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web berbasis Laravel untuk pengelolaan data perpustakaan digital dengan autentikasi dan pembagian hak akses role **Admin** dan **User**.
 
-## About Laravel
+## Pembagian Modul Kelompok
+- **Modul A (Katalog & Buku):** Daaniys Nur Aaqilah Putri (`102022500054`) — Route `/buku` (`routes/buku.php`)
+- **Modul B (Anggota & Kartu):** Luh Putu Deananda Juliadewi (`102022500114`) — Route `/anggota` (`routes/anggota.php`)
+- **Modul C (Penerbit & Supplier):** Arziky Samudra Marpaung (`102022500050`) — Route `/penerbit` (`routes/penerbit.php`)
+- **Modul D (Fasilitas & Area):** Raihanul Akbar (`102022500186`) — Route `/fasilitas` & `/area` (`routes/fasilitas.php`)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Cara Menjalankan
+1. Nyalakan **Apache** dan **MySQL** di XAMPP, lalu pastikan database `db_perpustakaan` tersedia.
+2. Jalankan migrasi dan seeder:
+   ```bash
+   php artisan migrate --seed
+   ```
+3. Jalankan server pengembangan:
+   ```bash
+   php artisan serve
+   ```
+4. Akses `http://127.0.0.1:8000` di browser.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Akun Pengujian (Seeder)
+- **Admin:** `admin@perpustakaan.com` / Password: `102022500050` (Akses penuh CRUD)
+- **User:** `user@perpustakaan.com` / Password: `102022500050` (Akses lihat/cari data saja)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Panduan Merge Modul Anggota Kelompok (Anti-Conflict)
+1. **Jangan mengubah `routes/web.php`** — cukup buat file route modul masing-masing:
+   - Modul A: `routes/buku.php`
+   - Modul B: `routes/anggota.php`
+   - Modul C: `routes/penerbit.php`
+   - Modul D: `routes/fasilitas.php`
+   File `routes/web.php` akan memuat keempat file tersebut secara otomatis jika tersedia.
+2. **Gunakan middleware yang sudah terdaftar:**
+   - `middleware('auth')` untuk halaman daftar/lihat data (`index` / `show`).
+   - `middleware(['auth', 'role:admin'])` untuk aksi tambah, ubah, dan hapus (`create`, `store`, `edit`, `update`, `destroy`).
+3. **Gunakan layout bersama:**
+   - Tambahkan `@extends('layouts.app')` dan `@section('content')` di setiap halaman Blade modul. Menu navigasi di topbar akan otomatis muncul ketika route `buku.index`, `anggota.index`, `penerbit.index`, `fasilitas.index`, atau `area.index` terdaftar.
+4. **Jangan menambahkan migration `add_role_to_users_table` baru** karena kolom `role` sudah tersedia di migration base.

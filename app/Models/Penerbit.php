@@ -8,8 +8,6 @@ class Penerbit extends Model
 {
     
     protected $table = 'penerbit';
-
-    
     const UPDATED_AT = null;
 
     protected $fillable = [
