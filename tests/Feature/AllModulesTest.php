@@ -57,3 +57,4 @@ class AllModulesTest extends TestCase
         ])->assertRedirect('/fasilitas');
     }
 }
+

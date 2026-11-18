@@ -21,8 +21,8 @@ Aplikasi web berbasis Laravel untuk pengelolaan data perpustakaan digital dengan
 4. Akses `http://127.0.0.1:8000` di browser.
 
 ## Akun Pengujian (Seeder)
-- **Admin:** `admin@perpustakaan.com` / Password: `102022500050` (Akses penuh CRUD)
-- **User:** `user@perpustakaan.com` / Password: `102022500050` (Akses lihat/cari data saja)
+- **Admin:** `admin@perpustakaan.com` / Password: `WADKEL1` (Akses penuh CRUD)
+- **User:** `user@perpustakaan.com` / Password: `WADKEL1` (Akses lihat/cari data saja)
 
 ## Panduan Merge Modul Anggota Kelompok (Anti-Conflict)
 1. **Jangan mengubah `routes/web.php`** — cukup buat file route modul masing-masing:
